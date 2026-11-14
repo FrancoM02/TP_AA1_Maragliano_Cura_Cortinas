@@ -11,7 +11,7 @@ siguiente va a llover (`RainTomorrow`).
 | Entrega | Ítems | Estado |
 |---|---|---|
 | 1.ª | 1. Análisis descriptivo · 2. Regresión logística · 3. Modelos base | Entregado |
-| 2.ª | 4. Optimización de hiperparámetros · 5. Explicabilidad · 6. AutoML | Pendiente |
+| 2.ª | 4. Optimización de hiperparámetros · 5. Explicabilidad · 6. AutoML | Entregado |
 | 3.ª | 7. Redes neuronales · 8. Comparación · 9. MLOps (Docker) · 10. Conclusión | Pendiente |
 
 ## Contenido
@@ -25,16 +25,17 @@ siguiente va a llover (`RainTomorrow`).
 ## Cómo ejecutarlo
 
 ```bash
-python -m venv .venv
+py -3.11 -m venv .venv
 .venv\Scripts\python -m pip install -r requisitos.txt
 ```
 
 Abrir `TP-clasificacion-AA1.ipynb`, elegir el kernel de `.venv` y ejecutar todas las
-celdas (tarda menos de un minuto). El notebook lee el CSV de esta misma carpeta; si no lo
+celdas (tarda unos 10 minutos, casi todo en PyCaret). El notebook lee el CSV de esta misma carpeta; si no lo
 encuentra (por ejemplo, al abrirlo en Google Colab desde GitHub), lo descarga de este
 repositorio.
 
-Se ejecutó con Python 3.13, pandas 3.1, scikit-learn 1.9, matplotlib 3.11 y seaborn 0.13.
+Se ejecutó con Python 3.11, PyCaret 3.3.2, scikit-learn 1.4.2, pandas 2.1.4 y SHAP 0.49.
+Se usa Python 3.11 porque PyCaret 3.3 no funciona con versiones más nuevas.
 Los resultados son reproducibles: la semilla está fijada en `RANDOM_STATE = 42`.
 
 ## Resumen de la metodología
@@ -47,6 +48,9 @@ Los resultados son reproducibles: la semilla está fijada en `RANDOM_STATE = 42`
   scikit-learn.
 - **Métrica principal:** F1 de la clase positiva (`RainTomorrow = Yes`), definida antes
   de ver los resultados.
-- **Resultado en prueba:** la regresión logística con el umbral 0,32 (elegido en
-  validación) obtiene F1 = 0,637 y ROC-AUC = 0,861. El mejor modelo base, la persistencia
-  ("mañana llueve si hoy llovió"), obtiene F1 = 0,447.
+- **`Location`:** se reemplaza por la latitud y la longitud de cada estación (2 columnas en
+  lugar de 49 one-hot), para que las estaciones cercanas queden cerca.
+- **Resultado en prueba (F1):** regresión logística con umbral 0,26 → 0,618; regresión
+  logística optimizada con grid search y validación cruzada temporal → 0,614; LightGBM elegido
+  por PyCaret con umbral 0,28 → 0,656. El mejor modelo base, la persistencia
+  ("mañana llueve si hoy llovió"), obtiene 0,447.

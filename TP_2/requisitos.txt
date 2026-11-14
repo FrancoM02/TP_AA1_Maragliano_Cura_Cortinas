@@ -1,6 +1,11 @@
-numpy>=1.26
-pandas>=2.2
-matplotlib>=3.8
-seaborn>=0.13
-scikit-learn>=1.4
+# Python 3.11 (PyCaret 3.3 no funciona con Python 3.12 o superior)
+pycaret==3.3.2
+scikit-learn==1.4.2
+pandas==2.1.4
+numpy==1.26.4
+matplotlib==3.7.5
+seaborn==0.13.2
+shap==0.49.1
+lightgbm==4.3.0
+six
 ipykernel
