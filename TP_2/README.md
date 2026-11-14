@@ -30,13 +30,15 @@ py -3.11 -m venv .venv
 ```
 
 Abrir `TP-clasificacion-AA1.ipynb`, elegir el kernel de `.venv` y ejecutar todas las
-celdas (tarda unos 10 minutos, casi todo en PyCaret). El notebook lee el CSV de esta misma carpeta; si no lo
-encuentra (por ejemplo, al abrirlo en Google Colab desde GitHub), lo descarga de este
-repositorio.
+celdas (tarda unos 6 minutos en una PC de 16 núcleos). El notebook lee el CSV de esta misma
+carpeta; si no lo encuentra (por ejemplo, al abrirlo en Google Colab desde GitHub), lo
+descarga de este repositorio.
 
-Se ejecutó con Python 3.11, PyCaret 3.3.2, scikit-learn 1.4.2, pandas 2.1.4 y SHAP 0.49.
-Se usa Python 3.11 porque PyCaret 3.3 no funciona con versiones más nuevas.
-Los resultados son reproducibles: la semilla está fijada en `RANDOM_STATE = 42`.
+Se ejecutó con Python 3.11.9, PyCaret 3.3.2, scikit-learn 1.4.2, pandas 2.1.4,
+LightGBM 4.3.0 y SHAP 0.49.1. Se usa Python 3.11 porque PyCaret 3.3 no funciona con
+versiones más nuevas. Los resultados son reproducibles: la semilla está fijada en
+`RANDOM_STATE = 42`, y dos ejecuciones completas desde un kernel limpio dieron las mismas
+salidas.
 
 ## Resumen de la metodología
 
@@ -48,9 +50,16 @@ Los resultados son reproducibles: la semilla está fijada en `RANDOM_STATE = 42`
   scikit-learn.
 - **Métrica principal:** F1 de la clase positiva (`RainTomorrow = Yes`), definida antes
   de ver los resultados.
+- **Validación cruzada temporal:** 5 folds dentro del entrenamiento, cortados por fecha, los
+  mismos para todas las comparaciones (representación de `Location`, preprocesamiento,
+  hiperparámetros y PyCaret).
 - **`Location`:** se reemplaza por la latitud y la longitud de cada estación (2 columnas en
-  lugar de 49 one-hot), para que las estaciones cercanas queden cerca.
-- **Resultado en prueba (F1):** regresión logística con umbral 0,26 → 0,618; regresión
-  logística optimizada con grid search y validación cruzada temporal → 0,614; LightGBM elegido
-  por PyCaret con umbral 0,28 → 0,656. El mejor modelo base, la persistencia
-  ("mañana llueve si hoy llovió"), obtiene 0,447.
+  lugar de 49 one-hot), contrastadas con el listado de estaciones de la Oficina de
+  Meteorología de Australia. La elección se comparó con one-hot, polinomios de las
+  coordenadas y regiones por KMeans (sección 1.11).
+- **Modelos:** regresión logística (optimizada con grid search) y LightGBM (optimizado con
+  random search), con el umbral elegido en validación. PyCaret se usa como referencia, con
+  los mismos folds. El modelo final se elige en validación, nunca en prueba.
+- **Resultado en prueba (F1):** LightGBM optimizado con umbral 0,31 → 0,673; mejor
+  regresión logística (umbral 0,26) → 0,618; LightGBM de PyCaret con umbral 0,28 → 0,656.
+  El mejor modelo base, la persistencia ("mañana llueve si hoy llovió"), obtiene 0,447.
